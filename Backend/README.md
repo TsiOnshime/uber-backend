@@ -1,4 +1,5 @@
-# User Registration Endpoint Documentation
+# Backend API Documentation
+## User Registration Endpoint Documentation
 
 ## Endpoint
 
