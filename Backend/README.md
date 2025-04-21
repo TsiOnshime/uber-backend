@@ -1,6 +1,6 @@
-# User Registration Endpoint Documentation
+# Backend API Documentation
 
-## Endpoint
+## User Registration Endpoint
 
 `POST /users/register`
 
@@ -76,9 +76,89 @@ The request body must be a JSON object with the following structure:
 }
 ```
 
+---
+
+## User Login Endpoint 
+
+`POST /users/login`
+
+## Description
+
+Authenticates a user using their email and password. Returns a JWT token and user data if credentials are valid.
+
+## Request Body
+
+The request body must be a JSON object with the following structure:
+
+```json
+{
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)"
+}
+```
+
+### Example
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securePassword123"
+}
+```
+
+## Responses
+
+### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+
+```json
+{
+  "token": "jwt_token_string",
+  "user": {
+    "_id": "user_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+    // other user fields
+  }
+}
+```
+
+### Validation Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field",
+      "location": "body"
+    }
+    // ...
+  ]
+}
+```
+
+### Authentication Error
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
 ## Notes
 
-- All fields are required.
-- The email must be unique and valid.
-- Passwords are securely hashed before storage.
-- On success, a JWT token is returned for authentication.
+- Both `email` and `password` are required.
+- Returns a JWT token on successful authentication.
+- If credentials are invalid, a 401 error is returned.
