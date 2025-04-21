@@ -267,50 +267,24 @@ Registers a new captain with vehicle information. Validates input, hashes the pa
 
 ### Request Body
 
-The request body must be a JSON object with the following structure:
-
 ```json
 {
   "fullname": {
-    "firstname": "string (required)",
-    "lastname": "string (required)"
+    "firstname": "string", // required, min 3 chars
+    "lastname": "string"   // required, min 3 chars
   },
-  "email": "string (valid email, required)",
-  "password": "string (min 6 chars, required)",
+  "email": "string",        // required, valid email
+  "password": "string",     // required, min 6 chars
   "vehicle": {
-    "color": "string (required)",
-    "plate": "string (required)",
-    "capacity": "integer (min 1, required)",
-    "vehicleType": "string (required)"
+    "color": "string",      // required, min 3 chars
+    "plate": "string",      // required, min 3 chars
+    "capacity": 1,          // required, integer >= 1
+    "vehicleType": "string" // required, one of: "car", "motorcyle", "auto"
   }
 }
 ```
 
-#### Example
-
-```json
-{
-  "fullname": {
-    "firstname": "Jane",
-    "lastname": "Smith"
-  },
-  "email": "jane.smith@example.com",
-  "password": "strongPassword123",
-  "vehicle": {
-    "color": "Blue",
-    "plate": "ABC-1234",
-    "capacity": 4,
-    "vehicleType": "Sedan"
-  }
-}
-```
-
-### Responses
-
-#### Success
-
-- **Status Code:** `201 Created`
-- **Body:**
+### Success Response
 
 ```json
 {
@@ -322,29 +296,25 @@ The request body must be a JSON object with the following structure:
       "lastname": "Smith"
     },
     "email": "jane.smith@example.com",
-    "password": "hashed password",
     "vehicle": {
       "color": "Blue",
       "plate": "ABC-1234",
       "capacity": 4,
-      "vehicleType": "Sedan"
+      "vehicleType": "car"
     }
     // other captain fields
   }
 }
 ```
 
-#### Validation Error
-
-- **Status Code:** `400 Bad Request`
-- **Body:**
+### Validation Error
 
 ```json
 {
   "errors": [
     {
-      "msg": "Error message",
-      "param": "field",
+      "msg": "Error message", // e.g. "First name is required"
+      "param": "field",       // e.g. "fullname.firstname"
       "location": "body"
     }
     // ...
@@ -352,10 +322,7 @@ The request body must be a JSON object with the following structure:
 }
 ```
 
-#### Duplicate Email Error
-
-- **Status Code:** `400 Bad Request`
-- **Body:**
+### Duplicate Email Error
 
 ```json
 {
@@ -365,5 +332,133 @@ The request body must be a JSON object with the following structure:
 
 ---
 
-> **Note:**  
-> Additional captain endpoints (login, profile, logout) should be documented here if implemented.
+## Captain Login
+
+`POST /captains/login`
+
+### Description
+
+Authenticates a captain using their email and password. Returns a JWT token and captain data if credentials are valid.
+
+### Request Body
+
+```json
+{
+  "email": "string",    // required, valid email
+  "password": "string"  // required, min 6 chars
+}
+```
+
+### Success Response
+
+```json
+{
+  "token": "jwt_token_string",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane.smith@example.com",
+    "vehicle": {
+      "color": "Blue",
+      "plate": "ABC-1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+    // other captain fields
+  }
+}
+```
+
+### Validation Error
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message", // e.g. "Invalid email address"
+      "param": "field",
+      "location": "body"
+    }
+    // ...
+  ]
+}
+```
+
+### Authentication Error
+
+```json
+{
+  "message": "Captain not found" // or "Invalid credentials"
+}
+```
+
+---
+
+## Get Captain Profile
+
+`GET /captains/profile`
+
+### Description
+
+Returns the authenticated captain's profile information.  
+**Requires authentication** via JWT token (sent as a cookie or in the `Authorization` header).
+
+### Success Response
+
+```json
+{
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane.smith@example.com",
+    "vehicle": {
+      "color": "Blue",
+      "plate": "ABC-1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+    // other captain fields
+  }
+}
+```
+
+### Authentication Error
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## Captain Logout
+
+`GET /captains/logout`
+
+### Description
+
+Logs out the authenticated captain by blacklisting the JWT token and clearing the authentication cookie.  
+**Requires authentication** via JWT token (sent as a cookie or in the `Authorization` header).
+
+### Success Response
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Authentication Error
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
