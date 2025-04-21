@@ -252,3 +252,118 @@ Logs out the authenticated user by blacklisting the JWT token and clearing the a
 - If credentials are invalid, a 401 error is returned.
 - All endpoints except `/users/register` and `/users/login` require authentication.
 - JWT token can be sent as a cookie or in the `Authorization` header.
+
+---
+
+# Captain Endpoints
+
+## Register Captain
+
+`POST /captains/register`
+
+### Description
+
+Registers a new captain with vehicle information. Validates input, hashes the password, creates a new captain, and returns an authentication token with the captain data.
+
+### Request Body
+
+The request body must be a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "string (required)",
+    "lastname": "string (required)"
+  },
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)",
+  "vehicle": {
+    "color": "string (required)",
+    "plate": "string (required)",
+    "capacity": "integer (min 1, required)",
+    "vehicleType": "string (required)"
+  }
+}
+```
+
+#### Example
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane.smith@example.com",
+  "password": "strongPassword123",
+  "vehicle": {
+    "color": "Blue",
+    "plate": "ABC-1234",
+    "capacity": 4,
+    "vehicleType": "Sedan"
+  }
+}
+```
+
+### Responses
+
+#### Success
+
+- **Status Code:** `201 Created`
+- **Body:**
+
+```json
+{
+  "token": "jwt_token_string",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane.smith@example.com",
+    "password": "hashed password",
+    "vehicle": {
+      "color": "Blue",
+      "plate": "ABC-1234",
+      "capacity": 4,
+      "vehicleType": "Sedan"
+    }
+    // other captain fields
+  }
+}
+```
+
+#### Validation Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field",
+      "location": "body"
+    }
+    // ...
+  ]
+}
+```
+
+#### Duplicate Email Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+
+```json
+{
+  "message": "Captain already exists"
+}
+```
+
+---
+
+> **Note:**  
+> Additional captain endpoints (login, profile, logout) should be documented here if implemented.
