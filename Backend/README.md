@@ -157,8 +157,98 @@ The request body must be a JSON object with the following structure:
 }
 ```
 
+---
+
+## Get User Profile Endpoint
+
+`GET /users/profile`
+
+### Description
+
+Returns the authenticated user's profile information.  
+**Requires authentication** via JWT token (sent as a cookie or in the `Authorization` header).
+
+### Request
+
+- **Headers:**  
+  - `Authorization: Bearer <jwt_token>` (if not using cookies)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+
+```json
+{
+  "_id": "user_id",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+  // other user fields
+}
+```
+
+#### Authentication Error
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+
+```json
+{
+  "message": "Authentication required"
+}
+```
+
+---
+
+## User Logout Endpoint
+
+`GET /users/logout`
+
+### Description
+
+Logs out the authenticated user by blacklisting the JWT token and clearing the authentication cookie.  
+**Requires authentication** via JWT token (sent as a cookie or in the `Authorization` header).
+
+### Request
+
+- **Headers:**  
+  - `Authorization: Bearer <jwt_token>` (if not using cookies)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+
+```json
+{
+  "message": "Logout successful"
+}
+```
+
+#### Authentication Error
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+
+```json
+{
+  "message": "Authentication required"
+}
+```
+
+---
+
 ## Notes
 
 - Both `email` and `password` are required.
 - Returns a JWT token on successful authentication.
 - If credentials are invalid, a 401 error is returned.
+- All endpoints except `/users/register` and `/users/login` require authentication.
+- JWT token can be sent as a cookie or in the `Authorization` header.
