@@ -1,8 +1,7 @@
 # Backend API Documentation
-## User Registration Endpoint Documentation
 
-## Endpoint
 
+## User Registration Endpoint
 `POST /users/register`
 
 ## Description
